@@ -1,0 +1,380 @@
+<!--
+ * @Description: 国际站-分享APP-APP下载页
+ * @Author: guanxinyue guanxinyue@hopewind.com
+ * @Date: 2024-03-26 15:55:35
+ * @LastEditors: guanxinyue guanxinyue@hopewind.com
+ * @LastEditTime: 2024-04-12 16:03:32
+ * @FilePath: \hopecloud-app\src\static\hybrid\download.html
+ * Copyright 2024 Shenzhen Hopewind Electric Co., Ltd, All Rights Reserved. 
+-->
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <title>hopeCloud download</title>
+        <link
+            rel="shorcut icon"
+            href="https://oss.hopewindcloud.eu/app/appUpgrade/thumbnail.svg"
+        />
+
+        <style>
+            /* 清除默认样式 */
+            * {
+                margin: 0; /* 去除页面默认的外边距 */
+                padding: 0; /* 去除页面默认的内边距 */
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                height: 100%;
+            }
+
+            .download {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                height: 100%;
+                padding: 16px 16px 100px;
+            }
+
+            /* 内置浏览器跳转提示 */
+            #jump {
+                display: none;
+                position: fixed;
+                top: 0;
+                height: 100%;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.6);
+            }
+            #jump img {
+                position: absolute;
+                right: 14px;
+            }
+            .card {
+                position: absolute;
+                top: 155px;
+                left: 30px;
+                right: 30px;
+                padding: 15px 22px;
+                background: #ffffff;
+                border-radius: 8px;
+            }
+            .tips {
+                display: flex;
+                align-items: center;
+                padding: 12px 0;
+            }
+            .step {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-right: 8px;
+                width: 24px;
+                height: 24px;
+                background: #e6e6e6;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #333333;
+            }
+            #text-one,
+            #text-two {
+                flex: 1;
+                font-size: 16px;
+                color: #333333;
+                line-height: 18px;
+            }
+
+            /* 软件描述 */
+            .content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            #title {
+                margin-top: 12px;
+                font-size: 20px;
+                color: #333333;
+            }
+            .des {
+                margin-top: 12px;
+                font-size: 12px;
+                color: #666666;
+            }
+            #intro {
+                margin-top: 40px;
+                padding: 20px 16px;
+                background: #f8f8f8;
+                border-radius: 8px;
+                font-size: 16px;
+                color: #333333;
+            }
+
+            /* 安装软件 */
+            .btn {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 46px;
+                background: #0a1535;
+                border: none;
+                border-radius: 8px;
+            }
+            #install {
+                margin-left: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                color: #ffffff;
+            }
+        </style>
+    </head>
+
+    <body onload="loadFunction()">
+        <div class="download">
+            <div id="jump">
+                <img
+                    src="https://oss.hopewindcloud.eu/app/appUpgrade/downloadJump.svg"
+                    width="107px"
+                    height="169px"
+                />
+                <div class="card">
+                    <div class="tips">
+                        <div class="step">1</div>
+                        <div id="text-one"></div>
+                    </div>
+                    <div class="tips">
+                        <div class="step">2</div>
+                        <div id="text-two"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <img
+                    src="https://oss.hopewindcloud.eu/app/appUpgrade/downloadLogo.svg"
+                    width="64px"
+                    height="64px"
+                />
+                <div id="title"></div>
+                <div class="des">Hope for a Greener World</div>
+                <div id="intro"></div>
+            </div>
+
+            <button
+                class="btn"
+                onclick="goDownload()"
+            >
+                <img
+                    id="icon"
+                    src=""
+                    width="20px"
+                    height="20px"
+                />
+                <span id="install"></span>
+            </button>
+        </div>
+
+        <script type="text/javascript">
+            // 浏览器信息
+            const browser = {
+                // 操作系统类型
+                platform: (function () {
+                    var u = navigator.userAgent;
+                    return {
+                        android: u.indexOf('Android') > -1 || u.indexOf('Adr') > -1, // android
+                        iPhone: u.indexOf('iPhone') > -1, // iPhone
+                        iPad: u.indexOf('iPad') > -1 || u.indexOf('Macintosh') > -1, // iPad
+                    };
+                })(),
+                // 浏览器语言
+                language: navigator.language || navigator.userLanguage,
+            };
+
+            // 语言列表
+            const languageList = {
+                // 英语
+                en: {
+                    title: 'hopeCloud',
+                    intro: 'hopeCloud is a mobile monitoring software that provides operation analysis and mobile operation and maintenance services for power stations.',
+                    install: 'Installation',
+                    tips1: 'Tap the button in the upper right corner',
+                    tips2: 'Open it in the browser',
+                },
+                // 中文
+                'zh-CN': {
+                    title: '禾望云',
+                    intro: '禾望云是一款移动端监控软件，提供电站运营分析和移动端运维服务。',
+                    install: '安装',
+                    tips1: '点击右上角的按钮',
+                    tips2: '在浏览器中打开',
+                },
+                // 繁体中文
+                'zh-TW': {
+                    title: '禾望雲',
+                    intro: '禾望雲是一款移動端監控軟體，提供電站運營分析和移動端運維服務。',
+                    install: '安裝',
+                    tips1: '點擊右上角的按鈕',
+                    tips2: '在瀏覽器中打開',
+                },
+                'zh-HK': {
+                    title: '禾望雲',
+                    intro: '禾望雲是一款移動端監控軟體，提供電站運營分析和移動端運維服務。',
+                    install: '安裝',
+                    tips1: '點擊右上角的按鈕',
+                    tips2: '在瀏覽器中打開',
+                },
+                // 德语
+                de: {
+                    title: 'hopeCloud',
+                    intro: 'hopeCloud ist eine mobile Überwachungssoftware, die Betriebsanalysen sowie mobile Betriebs- und Wartungsdienstleistungen für Kraftwerke anbietet.',
+                    install: 'Installation',
+                    tips1: 'Tippen Sie auf die Schaltfläche in der oberen rechten Ecke',
+                    tips2: 'Öffnen Sie es im Browser',
+                },
+                // 西班牙语
+                es: {
+                    title: 'Nube de esperanza',
+                    intro: 'hopecloud es un software de monitoreo móvil que proporciona análisis de operaciones y servicios móviles de operación y mantenimiento para centrales eléctricas.',
+                    install: 'Instalación',
+                    tips1: 'Haga clic en el botón en la esquina superior derecha',
+                    tips2: 'Ábrelo en el navegador',
+                },
+                // 意大利语
+                it: {
+                    title: 'hopeCloud',
+                    intro: 'hopeCloud è un software di monitoraggio mobile che fornisce analisi di funzionamento e servizi mobili di funzionamento e manutenzione per le centrali elettriche.',
+                    install: 'Installazione',
+                    tips1: "Tocca il pulsante nell'angolo in alto a destra",
+                    tips2: 'Apri nel browser',
+                },
+                // 葡萄牙语（巴西）
+                'pt-BR': {
+                    title: 'hopeCloud',
+                    intro: 'hopecloud é um software de monitoramento móvel que fornece análise de operação e serviços de operação e manutenção móveis para estações elétricas.',
+                    install: 'Instalação',
+                    tips1: 'Pega no botão no canto superior direito',
+                    tips2: 'Abre no navegador',
+                },
+                // 葡萄牙语（葡萄牙）
+                'pt-PT': {
+                    title: 'hopeCloud',
+                    intro: 'hopeCloud é um software de monitoramento móvel que fornece análise de operação e serviços móveis de operação e manutenção para centrais elétricas.',
+                    install: 'Instalação',
+                    tips1: 'Toque no botão no canto superior direito',
+                    tips2: 'Abra no navegador',
+                },
+                // 韩语
+                ko: {
+                    title: '화망운',
+                    intro: 'hopeCloud는 발전소에 운영 분석 및 모바일 운영 서비스를 제공하는 모바일 모니터링 소프트웨어입니다.',
+                    install: '설치',
+                    tips1: '오른쪽 상단의 버튼을 클릭하십시오',
+                    tips2: '브라우저에서 열기',
+                },
+                // 荷兰语
+                nl: {
+                    title: 'hopeCloud',
+                    intro: 'hopeCloud is een mobiele monitoringsoftware die operationele analyse en mobiele bediening en onderhoud van centrales biedt.',
+                    install: 'Installatie',
+                    tips1: 'Tik op de knop in de rechterbovenhoek',
+                    tips2: 'Open het in de browser',
+                },
+                // 土耳其语
+                tr: {
+                    title: 'hopeCloud',
+                    intro: 'hopecloud, enerji istasyonları için operasyon analizi, mobil operasyon ve destek hizmetleri sağlayan mobil izleme yazılımıdır.',
+                    install: 'Yükleme',
+                    tips1: 'Tap the button in the upper right corner',
+                    tips2: 'Tarayıcıda aç',
+                },
+            };
+
+            // 找出与语言列表最匹配的语言类型
+            function getLocalizedLanguage(navigatorLanguage, languageList) {
+                // 找出与 navigatorLanguage 最匹配的语言代码
+                const closestLanguageCode = Object.keys(languageList).find((langCode) => navigatorLanguage.startsWith(langCode));
+                // 如果没有找到匹配项，则默认展示英文
+                if (!closestLanguageCode) {
+                    return languageList['en'];
+                }
+                // 返回匹配语言代码对应的文本内容
+                return languageList[closestLanguageCode];
+            }
+
+            // 判断是否为内置浏览器
+            function isBulitIN() {
+                var ua = navigator.userAgent.toLowerCase();
+                if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+                    if (browser.platform.iPad || browser.platform.iPhone) {
+                        var version = ua.split('micromessenger')[1].substring(1, 6).split(' ')[0];
+                        if (version.split('.').length === 2) {
+                            version += '.0';
+                        }
+                        if (version < '6.0.2') {
+                            return 'WeChat';
+                        }
+                    } else {
+                        return 'WeChat';
+                    }
+                } else if (ua.match(/QQ/i) == 'qq') {
+                    return 'QQ';
+                } else if (ua.match(/Alipay/i) == 'alipay' && payway == 2) {
+                    return 'alipay';
+                } else if (ua.match(/weibo/i) == 'weibo') {
+                    return 'weibo';
+                }
+                return false;
+            }
+
+            // 页面初始化
+            function loadFunction() {
+                // 设置页面语言
+                document.documentElement.lang = browser.language;
+                // 获取对应语言的文本内容
+                const textContent = getLocalizedLanguage(browser.language, languageList);
+                // 更新页面元素文本
+                document.getElementById('title').textContent = textContent.title;
+                document.getElementById('intro').textContent = textContent.intro;
+                document.getElementById('install').textContent = textContent.install;
+
+                // 根据移动终端类型显示不同的应用商店类型
+                const icon = document.getElementById('icon');
+                if (browser.platform.android) {
+                    // Android端显示Google play
+                    icon.src = 'https://oss.hopewindcloud.eu/app/appUpgrade/downloadGoogle.svg';
+                } else if (browser.platform.iPad || browser.platform.iPhone) {
+                    // iOS端显示Apple store
+                    icon.src = 'https://oss.hopewindcloud.eu/app/appUpgrade/downloadIos.svg';
+                } else {
+                    icon.style.display = 'none';
+                }
+
+                // 如果为内置浏览器显示跳转提示
+                if (isBulitIN()) {
+                    document.getElementById('jump').style.display = 'block';
+                    document.getElementById('text-one').textContent = textContent.tips1;
+                    document.getElementById('text-two').textContent = textContent.tips2;
+                }
+            }
+
+            // 根据不同终端类型跳转不同地址
+            function goDownload() {
+                if (browser.platform.android) {
+                    // Android跳转Google play
+                    window.location.href = 'https://play.google.com/store/apps/details?id=uni.UNI0FC3B80';
+                } else if (browser.platform.iPad || browser.platform.iPhone) {
+                    // iOS跳转AppStore
+                    window.location.href = 'https://itunes.apple.com/us/app/id1612425660';
+                }
+            }
+        </script>
+    </body>
+</html>
